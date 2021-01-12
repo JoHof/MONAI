@@ -99,20 +99,19 @@ class UNet(nn.Module):
                 subblock = self._get_bottom_layer(c, channels[1])
                 upc = c + channels[1]
 
-            down = self._get_down_layer(inc, c, s, is_top)  # create layer in downsampling path
+            down = self._get_down_layer(inc, c, s)  # create layer in downsampling path
             up = self._get_up_layer(upc, outc, s, is_top)  # create layer in upsampling path
 
             return nn.Sequential(down, SkipConnection(subblock), up)
 
         self.model = _create_block(in_channels, out_channels, self.channels, self.strides, True)
 
-    def _get_down_layer(self, in_channels: int, out_channels: int, strides: int, is_top: bool) -> nn.Module:
+    def _get_down_layer(self, in_channels: int, out_channels: int, strides: int) -> nn.Module:
         """
         Args:
             in_channels: number of input channels.
             out_channels: number of output channels.
             strides: convolution stride.
-            is_top: True if this is the top block.
         """
         if self.num_res_units > 0:
             return ResidualUnit(
